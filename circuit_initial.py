@@ -6,30 +6,42 @@ from sympy import Symbol, simplify
 from sympy.solvers import solve
 
 print "\nElectrical Circuits\n"
-vo = Symbol("vo")
-vr = Symbol("vr")
-ir = Symbol("ir")
-ic = # complete the line
-il = # complete the line
-r = # complete the line
-omega = Symbol("omega")
-c = # complete the line
-l = # complete the line
+# We set our unknowns: vo, vr, ir, ic and il
+vo = Symbol("V_O")
+vr = Symbol("V_R")
+ir = Symbol("I_R")
+ic = Symbol("I_C")
+il = Symbol("I_L")   
+r = Symbol("R")          # resistance
+omega = Symbol("\omega") # angular frequency
+c = Symbol("C")          # capacitance
+l = Symbol("L")          # inductance
 
 
 eq1 = (vr + vo - 1, 
        ir - ic - il, 
        vr - ir*r,
        # what does 1j mean?
+	   """
+	   1j represents the imaginary number i
+	   """
        vo - ic/(1j*omega*c),
-       # complete the following line:
-       vo - # ...)
+       vo - 1j*omega*l)
 # what does the following line do?
 sol = solve(eq1, (vo, vr, ir, ic, il))
 vos = simplify(sol[vo])
+"""
+The system of equations is solved for the 5 specified variables.
+Subsequently, the variable vo is simplified.
+"""
 # compare the output of the following line if vos = sol[vo]
 print vos
-
+vos = sol[vo]
+print vos
+"""
+When 'vos=sol[vo]' instead of 'vos=simplify(sol[vo])', the output is still
+the same because the expression is already simplified after solving.
+"""
 
 numvalue = {c: 10**-6, l: 10**-3}
 # what does subs()?
