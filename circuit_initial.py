@@ -1,11 +1,9 @@
 import cmath
 import numpy as np
 import matplotlib.pyplot as plt
-import sympy
 from sympy import Symbol, simplify
 from sympy.solvers import solve
 
-print "\nElectrical Circuits\n"
 # We set our unknowns: vo, vr, ir, ic and il
 vo = Symbol("V_O")
 vr = Symbol("V_R")
@@ -17,14 +15,10 @@ omega = Symbol("\omega") # angular frequency
 c = Symbol("C")          # capacitance
 l = Symbol("L")          # inductance
 
-
 eq1 = (vr + vo - 1, 
        ir - ic - il, 
        vr - ir*r,
-       # what does 1j mean?
-	   """
-	   1j represents the imaginary number i
-	   """
+       # what does 1j mean? (1j represents the imaginary number i)
        vo - ic/(1j*omega*c),
        vo - 1j*omega*l)
 # what does the following line do?
@@ -44,28 +38,48 @@ the same because the expression is already simplified after solving.
 """
 
 numvalue = {c: 10**-6, l: 10**-3}
-# what does subs()?
-# is vos.subs(c=10**-6, l=10**-3) allowed? Try it.
+# what does subs() do? is vos.subs(c=10**-6, l=10**-3) allowed? Try it.
 vosnum = vos.subs(numvalue)
 flist = [vosnum.subs({r: 100.0*3**s}) for s in range(0, 4)]
 omega_axis = np.linspace(20000, 43246, 100)
+"""
+'subs()' substitutes a variable expression with an actual number.
+Using 'numvalue = {c: 10**-6, l: 10**-3}', the result of the substitution
+is i*omega/1000.
+"""
 # what does 121 in the following line mean?
 # what are the other possible parameters of subplot()?
 plt.subplot(121)
+"""
+'121' indicates the position of the subplot. The three numbers represent
+numrows, numcols, fignum. fignum ranges from 1 to numrows*numcols. 
+"""
 # describe (python type, dimensions, etc) of the input parameter/s of zip() below
 # what does zip(*a) do if a is a 2-D list or numpy array?
 plt.plot(omega_axis, zip(*[[abs(f.subs({omega: o})) for o in omega_axis] 
                                                     for f in flist]))
+"""
+The input parameter is a 2-D list. It is a list within the list.
+When there is an asterisk before the arguments (e.g. zip(*a) where a is 2-D),
+it outputs a list of tuples.
+"""
 plt.xlim(20000, 43246)
 plt.ylim(0, 1)
-plt.xlabel('omega')
-plt.ylabel('Abs[vo]')
+plt.xlabel('$\omega')
+plt.ylabel('$V_O$')
 plt.xticks([20000, 30000, 40000])
-
-plt.subplot(122)
 # Replicate Fig. 2.6, right pane following the code for Fig. 2.6, left pane
-plt.plot(omega_axis, # ...
-# ...
+"""
+Code shown below.
+"""
+plt.subplot(122)
+plt.plot(omega_axis, zip(*[[cmath.phase(f.subs({omega: o})) for o in omega_axis] 
+                                                            for f in flist]))
+plt.xlim(20000, 43246)
+plt.ylim(-1.5, 1.5)
+plt.xlabel('$\omega$')
+plt.ylabel('$\phi$')
+plt.xticks([20000, 30000, 40000])
 plt.show()
 
 def vsaw(t, T=1.0): 
