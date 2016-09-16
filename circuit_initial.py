@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sympy import Symbol, simplify
 from sympy.solvers import solve
+from scipy.signal import sawtooth
 
 # We set our unknowns: vo, vr, ir, ic and il
 vo = Symbol("V_O")
@@ -20,7 +21,7 @@ eq1 = (vr + vo - 1,
        vr - ir*r,
        # what does 1j mean? (1j represents the imaginary number i)
        vo - ic/(1j*omega*c),
-       vo - 1j*omega*l)
+       vo - 1j*omega*l*il)
 # what does the following line do?
 sol = solve(eq1, (vo, vr, ir, ic, il))
 vos = simplify(sol[vo])
@@ -30,8 +31,8 @@ Subsequently, the variable vo is simplified.
 """
 # compare the output of the following line if vos = sol[vo]
 print vos
-vos = sol[vo]
-print vos
+#vos = sol[vo]
+print sol[vo]
 """
 When 'vos=sol[vo]' instead of 'vos=simplify(sol[vo])', the output is still
 the same because the expression is already simplified after solving.
@@ -59,13 +60,14 @@ numrows, numcols, fignum. fignum ranges from 1 to numrows*numcols.
 plt.plot(omega_axis, zip(*[[abs(f.subs({omega: o})) for o in omega_axis] 
                                                     for f in flist]))
 """
-The input parameter is a 2-D list. It is a list within the list.
+The input parameter is a 2-D list. It is a list of absolute omega values
+within another list.
 When there is an asterisk before the arguments (e.g. zip(*a) where a is 2-D),
 it outputs a list of tuples.
 """
 plt.xlim(20000, 43246)
 plt.ylim(0, 1)
-plt.xlabel('$\omega')
+plt.xlabel('$\omega$')
 plt.ylabel('$V_O$')
 plt.xticks([20000, 30000, 40000])
 # Replicate Fig. 2.6, right pane following the code for Fig. 2.6, left pane
@@ -80,54 +82,62 @@ plt.ylim(-1.5, 1.5)
 plt.xlabel('$\omega$')
 plt.ylabel('$\phi$')
 plt.xticks([20000, 30000, 40000])
+plt.tight_layout()
+plt.savefig('fig2.6.png', dpi=300)
 plt.show()
 
-def vsaw(t, T=1.0): 
-    # complete this function
-
-omegares = 1./np.sqrt(np.prod(numvalue.values()))
-alist = (1/np.sqrt(256)) * vsaw(np.arange(256)/256.0)
-blist = np.sqrt(256) * np.fft.fft(alist)
-
-def plot3(fac, w):
-    # add a docstring for this function
-    omegai = fac * omegares
-    # How were the limits of arange() in the following line chosen?
-    volist = np.concatenate(([complex(vosnum.subs({omega: omegai*s, r:
-                                                   w}).evalf()) 
-                                 for s in np.arange(1, 129)],
-                             [0.0],
-                             [complex(vosnum.subs({omega: omegai*s, r:
-                                                   w}).evalf()) 
-                                 for s in np.arange(-127, 0)]))
-    vtrans = np.fft.ifft(blist * volist)
-    plotlist = np.array([[(k+1)/256., vtrans[k%256]] for k in range(768)])
-    plt.plot(plotlist[:,0], plotlist[:,1])
-    # what does the following line do?
-    plt.axhline(0)
-    # add labels
-    plt.show()
-
-plot3(1, 2700.0)
-plot3(1/3., 200.0)
-plot3(3.0, 5.0)
-
-eq2 = (ir * (r + 1/(1j*omega*c) + 1j*omega*l) + vo - 1,
-       ir - (1j*omega*c + 1/(1j*omega*l)) * vo)
-sol2 = # complete this line
-vos2 = simplify(sol2[vo])
-irs = simplify(sol2[ir])
-# why should irs be passed to sympy.abs() before squaring?
-power = (r**2) *( sympy.abs(irs)**2)
-flist3 = [sympy.abs(vos2.subs(numvalue).subs({r: 10.0*3**s})) 
-            for s in range(0, 3)]
-omega_axis = np.linspace(10000, 70000, 1000)
-lines = # ...
-# what does plt.setp() do?
-plt.setp(lines[0], lw=2)
-plt.setp(lines[1], ls='--'
-# add labels and ticks
-plt.minorticks_on()
-plt.show()
-
-# replicate fig. 2.10
+#def vsaw(t, T=1.0): 
+#    # complete this function
+#    """
+#    Code goes below
+#    """
+#    pass
+#    
+#omegares = 1./np.sqrt(np.prod(numvalue.values()))
+#alist = (1/np.sqrt(256)) * vsaw(np.arange(256)/256.0)
+#blist = np.sqrt(256) * np.fft.fft(alist)
+#
+#def plot3(fac, w):
+#    """
+#    Docstring goes here.
+#    """
+#    omegai = fac * omegares
+#    # How were the limits of arange() in the following line chosen?
+#    volist = np.concatenate(([complex(vosnum.subs({omega: omegai*s, r:
+#                                                   w}).evalf()) 
+#                                 for s in np.arange(1, 129)],
+#                             [0.0],
+#                             [complex(vosnum.subs({omega: omegai*s, r:
+#                                                   w}).evalf()) 
+#                                 for s in np.arange(-127, 0)]))
+#    vtrans = np.fft.ifft(blist * volist)
+#    plotlist = np.array([[(k+1)/256., vtrans[k%256]] for k in range(768)])
+#    plt.plot(plotlist[:,0], plotlist[:,1])
+#    # what does the following line do?
+#    plt.axhline(0)
+#    # add labels
+#    plt.show()
+#
+#plot3(1, 2700.0)
+#plot3(1/3., 200.0)
+#plot3(3.0, 5.0)
+#
+#eq2 = (ir * (r + 1/(1j*omega*c) + 1j*omega*l) + vo - 1,
+#       ir - (1j*omega*c + 1/(1j*omega*l)) * vo)
+#sol2 = # complete this line
+#vos2 = simplify(sol2[vo])
+#irs = simplify(sol2[ir])
+## why should irs be passed to sympy.abs() before squaring?
+#power = (r**2) *( sympy.abs(irs)**2)
+#flist3 = [sympy.abs(vos2.subs(numvalue).subs({r: 10.0*3**s})) 
+#            for s in range(0, 3)]
+#omega_axis = np.linspace(10000, 70000, 1000)
+#lines = # ...
+## what does plt.setp() do?
+#plt.setp(lines[0], lw=2)
+#plt.setp(lines[1], ls='--'
+## add labels and ticks
+#plt.minorticks_on()
+#plt.show()
+#
+## replicate fig. 2.10
