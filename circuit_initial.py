@@ -71,9 +71,7 @@ plt.xlabel('$\omega$')
 plt.ylabel('$V_O$')
 plt.xticks([20000, 30000, 40000])
 # Replicate Fig. 2.6, right pane following the code for Fig. 2.6, left pane
-"""
-Code shown below.
-"""
+"""Code shown below."""
 plt.subplot(122)
 plt.plot(omega_axis, zip(*[[cmath.phase(f.subs({omega: o})) for o in omega_axis] 
                                                             for f in flist]))
@@ -86,42 +84,61 @@ plt.tight_layout()
 plt.savefig('fig2.6.png', dpi=300)
 plt.show()
 
-#def vsaw(t, T=1.0): 
-#    # complete this function
-#    """
-#    Code goes below
-#    """
-#    pass
-#    
-#omegares = 1./np.sqrt(np.prod(numvalue.values()))
-#alist = (1/np.sqrt(256)) * vsaw(np.arange(256)/256.0)
-#blist = np.sqrt(256) * np.fft.fft(alist)
-#
-#def plot3(fac, w):
-#    """
-#    Docstring goes here.
-#    """
-#    omegai = fac * omegares
-#    # How were the limits of arange() in the following line chosen?
-#    volist = np.concatenate(([complex(vosnum.subs({omega: omegai*s, r:
-#                                                   w}).evalf()) 
-#                                 for s in np.arange(1, 129)],
-#                             [0.0],
-#                             [complex(vosnum.subs({omega: omegai*s, r:
-#                                                   w}).evalf()) 
-#                                 for s in np.arange(-127, 0)]))
-#    vtrans = np.fft.ifft(blist * volist)
-#    plotlist = np.array([[(k+1)/256., vtrans[k%256]] for k in range(768)])
-#    plt.plot(plotlist[:,0], plotlist[:,1])
-#    # what does the following line do?
-#    plt.axhline(0)
-#    # add labels
-#    plt.show()
-#
-#plot3(1, 2700.0)
-#plot3(1/3., 200.0)
-#plot3(3.0, 5.0)
-#
+def vsaw(t, T=1.0): 
+    """Output a sawtooth wave over a given time array t.
+    
+    In order to create a sawtooth wave, I utilized 'scipy.signal.sawtooth()'.
+    The instructions call for a period T = 1.0. However, 'sawtooth()' has a
+    period T = 2pi.
+    To get around this, the argument for the 'sawtooth()' function must be
+    multiplied by 2pi.
+    """
+    return sawtooth(t*2*np.pi)
+    
+omegares = 1./np.sqrt(np.prod(numvalue.values()))
+alist = (1/np.sqrt(256)) * vsaw(np.arange(256)/256.0)
+blist = np.sqrt(256) * np.fft.fft(alist)
+
+def plot3(fac, w):
+    # add a docstring for this function
+    """Plots the output voltage of a sawtooth voltage input.
+    
+    Parameters
+    ----------
+    fac : Ratio of input fundamental frequency to the resonance frequency
+    w : Resistor value
+    
+    Returns
+    -------
+    Output voltage V_out vs. t/T plot showing the filtered sawtooth input.
+    """
+    omegai = fac * omegares
+    # How were the limits of arange() in the following line chosen?
+    volist = np.concatenate(([complex(vosnum.subs({omega: omegai*s, r:
+                                                   w}).evalf()) 
+                                 for s in np.arange(1, 129)],
+                             [0.0],
+                             [complex(vosnum.subs({omega: omegai*s, r:
+                                                   w}).evalf()) 
+                                 for s in np.arange(-127, 0)]))
+    vtrans = np.fft.ifft(blist * volist)
+    plotlist = np.array([[(k+1)/256., vtrans[k%256]] for k in range(768)])
+    plt.plot(plotlist[:,0], plotlist[:,1])
+    # what does the following line do?
+    plt.axhline(0, color='black')
+    """'axhline()' creates a horizontal axis line."""
+    # add labels
+    """Labels shown below."""
+    plt.xlabel('$t/T$')
+    plt.ylabel('$V_O(t)$')
+    fname = 'fig2.7and8_f' + str(fac) + 'r' + str(w) + '.png'
+    plt.savefig(fname, dpi=300)
+    plt.show()
+
+plot3(1, 2700.0)
+plot3(1/3., 200.0)
+plot3(3.0, 5.0)
+
 #eq2 = (ir * (r + 1/(1j*omega*c) + 1j*omega*l) + vo - 1,
 #       ir - (1j*omega*c + 1/(1j*omega*l)) * vo)
 #sol2 = # complete this line
