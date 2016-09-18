@@ -30,9 +30,8 @@ The system of equations is solved for the 5 specified variables.
 Subsequently, the variable vo is simplified.
 """
 # compare the output of the following line if vos = sol[vo]
-print vos
-#vos = sol[vo]
-print sol[vo]
+print "Simplified: " + str(vos)
+print "Unsimplified: " + str(sol[vo])
 """
 When 'vos=sol[vo]' instead of 'vos=simplify(sol[vo])', the output is still
 the same because the expression is already simplified after solving.
