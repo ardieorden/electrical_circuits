@@ -59,7 +59,7 @@ numrows, numcols, fignum. fignum ranges from 1 to numrows*numcols.
 plt.plot(omega_axis, zip(*[[abs(f.subs({omega: o})) for o in omega_axis] 
                                                     for f in flist]))
 """
-The input parameter is a 2-D list. It is a list of absolute omega values
+The input parameter is a 2-D list. It is a list of output voltages
 within another list.
 When there is an asterisk before the arguments (e.g. zip(*a) where a is 2-D),
 it outputs a list of tuples.
