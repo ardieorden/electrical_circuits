@@ -1,7 +1,7 @@
 import cmath
 import numpy as np
 import matplotlib.pyplot as plt
-from sympy import Symbol, simplify
+from sympy import Symbol, simplify, Abs
 from sympy.solvers import solve
 from scipy.signal import sawtooth
 
@@ -114,13 +114,16 @@ def plot3(fac, w):
     """
     omegai = fac * omegares
     # How were the limits of arange() in the following line chosen?
-    volist = np.concatenate(([complex(vosnum.subs({omega: omegai*s, r:
-                                                   w}).evalf()) 
-                                 for s in np.arange(1, 129)],
+    """
+    To be able to multiply 'volist' correctly with 'blist' for the subsequent
+    inverse Fourier transform, both arrays must be of the same size. Since
+    'blist' is a numpy array of size 256, 'volist' must also be the same
+    """
+    volist = np.concatenate(([complex(vosnum.subs({omega: omegai*s, r: w}).evalf())
+                                for s in np.arange(1, 129)],
                              [0.0],
-                             [complex(vosnum.subs({omega: omegai*s, r:
-                                                   w}).evalf()) 
-                                 for s in np.arange(-127, 0)]))
+                             [complex(vosnum.subs({omega: omegai*s, r: w}).evalf()) 
+                                for s in np.arange(-127, 0)]))
     vtrans = np.fft.ifft(blist * volist)
     plotlist = np.array([[(k+1)/256., vtrans[k%256]] for k in range(768)])
     plt.plot(plotlist[:,0], plotlist[:,1])
@@ -139,22 +142,35 @@ plot3(1, 2700.0)
 plot3(1/3., 200.0)
 plot3(3.0, 5.0)
 
-#eq2 = (ir * (r + 1/(1j*omega*c) + 1j*omega*l) + vo - 1,
-#       ir - (1j*omega*c + 1/(1j*omega*l)) * vo)
-#sol2 = # complete this line
-#vos2 = simplify(sol2[vo])
-#irs = simplify(sol2[ir])
-## why should irs be passed to sympy.abs() before squaring?
-#power = (r**2) *( sympy.abs(irs)**2)
-#flist3 = [sympy.abs(vos2.subs(numvalue).subs({r: 10.0*3**s})) 
-#            for s in range(0, 3)]
-#omega_axis = np.linspace(10000, 70000, 1000)
-#lines = # ...
-## what does plt.setp() do?
-#plt.setp(lines[0], lw=2)
-#plt.setp(lines[1], ls='--'
-## add labels and ticks
-#plt.minorticks_on()
-#plt.show()
-#
-## replicate fig. 2.10
+eq2 = (ir * (r + 1/(1j*omega*c) + 1j*omega*l) + vo - 1,
+       ir - (1j*omega*c + 1/(1j*omega*l)) * vo)
+sol2 = solve(eq2, [vo, vr, ir, ic, il])
+vos2 = simplify(sol2[vo])
+irs = simplify(sol2[ir])
+# why should irs be passed to Abs() before squaring?
+"""
+'irs' was first passed through an absolute value before squaring to ensure that
+the square is solely real-valued.
+"""
+power = (r**2) * ( Abs(irs)**2)
+flist3 = [Abs(vos2.subs(numvalue).subs({r: 10.0*3**s})) for s in range(0, 3)]
+omega_axis = np.linspace(10000, 70000, 1000)
+lines = plt.plot(omega_axis, zip(*[[abs(f.subs({omega: o})) for o in omega_axis]
+                                                            for f in flist3]))
+# what does plt.setp() do?
+"""'plt.setp' changes the properties of an artist object"""
+plt.setp(lines[0], lw=2, label="$R = 10 \Omega$")
+plt.setp(lines[1], ls='--', label="$R = 30 \Omega$")
+plt.setp(lines[2], ls='-.', label="$R = 90 \Omega$")
+# add labels and ticks
+"""Labels and ticks shown below."""
+plt.xlabel('$\omega$')
+plt.ylabel('|$V_O$|')
+plt.xticks([10000, 30000, 50000, 70000])
+plt.tight_layout()
+plt.minorticks_on()
+plt.legend(loc=0)
+plt.savefig('fig2.9.png', dpi=300)
+plt.show()
+
+# replicate fig. 2.10
