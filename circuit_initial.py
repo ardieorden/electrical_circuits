@@ -152,7 +152,7 @@ irs = simplify(sol2[ir])
 'irs' was first passed through an absolute value before squaring to ensure that
 the square is solely real-valued.
 """
-power = (r**2) * ( Abs(irs)**2)
+power = (r**2) * (Abs(irs)**2)
 flist3 = [Abs(vos2.subs(numvalue).subs({r: 10.0*3**s})) for s in range(0, 3)]
 omega_axis = np.linspace(10000, 70000, 1000)
 lines = plt.plot(omega_axis, zip(*[[abs(f.subs({omega: o})) for o in omega_axis]
@@ -174,3 +174,14 @@ plt.savefig('fig2.9.png', dpi=300)
 plt.show()
 
 # replicate fig. 2.10
+"""Code shown below."""
+flist4 = [power.subs(numvalue).subs({r: 10.0}) for s in range(0,1)]
+lines = plt.plot(omega_axis, zip(*[[f.subs({omega: o}) for o in omega_axis]
+                                                       for f in flist4]))
+plt.xlabel('$\omega$')
+plt.ylabel('$P/P_0$')
+plt.xticks([10000, 30000, 50000, 70000])
+plt.tight_layout()
+plt.minorticks_on()
+plt.savefig('fig2.10.png', dpi=300)
+plt.show()
